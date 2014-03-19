@@ -13,15 +13,14 @@
 #include "MotorEye.h"
 #include "SoundMouth.h"
 #include "DataAcquisition.h"
-#include "AntennaGlobeHandle.h"
 
 PotAntenna potAntennaLeft(POT_LEFT_PIN); // left antenna
 LEDEyebrow eyebrowLeft(EYEBROW_LEDS_LEFT_PINS, 130, 0); // left eyebrow with max and min analog values
 MotorEye motorLeft(MOTOR_LEFT_PIN); // left motor
 SoundMouth soundMouth(SOUND_PINS); // random number of pins for now
-// AntennaGlobeHandle globeHandleLeft(TODO_PIN_FSR, TODO_PIN_LED, 50, 0); // class to use for FSR + LED in the antenna handle
+
 DataAcquisition blueDataMonster; // for sending data over bluetooth
-unsigned long BT_SAMPLING_RATE_MS = 1000;
+unsigned long BT_SAMPLING_RATE_US = 1000; // 1ms
 
 // global state
 State GLOBAL_STATE = POWERUP;
@@ -95,7 +94,7 @@ void loop() {
 			int potentiometerValue = potAntennaLeft.value();
 
 			// send data with 1ms sampling
-			blueDataMonster.sendData(micros(), BT_SAMPLING_RATE_MS, potentiometerValue);
+			blueDataMonster.sendData(micros(), BT_SAMPLING_RATE_US, potentiometerValue);
 
 			// toggle leds based on potentiometer value
 			eyebrowLeft.setStateBasedOnPotValue(potentiometerValue);
