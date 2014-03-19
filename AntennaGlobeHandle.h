@@ -13,7 +13,7 @@ class AntennaGlobeHandle
 	public:
 		// this class takes care of the globe-y handle thing on top of the antenna
 		// it includes the LED and the FSR
-		AntennaGlobeHandle(const int pinFSR, const int pinLED, int analog_max_level);
+		AntennaGlobeHandle(const int pinFSR, const int pinLED, int analog_max_level, int analog_min_level);
 
 	private:
 		int _pinFSR;

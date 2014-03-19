@@ -8,14 +8,14 @@
 #include "LED.h"
 
 // creates an instance of a LEDEyebrow
-LEDEyebrow::LEDEyebrow(const int pins[3], int analog_max_level)
+LEDEyebrow::LEDEyebrow(const int pins[3], int analog_max_level, int analog_min_level)
 {
 	// create some LED instances from the general LED class
 	for (int i = 0; i < 3; ++i)
 	{
 		// int p = pins[i];
 		// LED led(p);
-		_leds[i] = LED(pins[i], analog_max_level);
+		_leds[i] = LED(pins[i], analog_max_level, analog_min_level);
 	}
 }
 
@@ -43,12 +43,12 @@ void LEDEyebrow::resetEffects()
 }
 
 // returns the number of pulses so far
-int LEDEyebrow::pulseAll(unsigned long currentTime_us, unsigned long on_period_ms, unsigned long off_spacing_ms)
+int LEDEyebrow::pulseAll(unsigned long currentTime_us, unsigned long on_glow_ms, unsigned long on_fade_ms, unsigned long off_spacing_ms, unsigned long initial_delay_ms)
 {
 	int numPulsesSoFar;
 	for (int i = 0; i < 3; ++i)
 	{
-		numPulsesSoFar = _leds[i].pulse(currentTime_us, on_period_ms, off_spacing_ms);
+		numPulsesSoFar = _leds[i].pulse(currentTime_us, on_glow_ms, on_fade_ms, off_spacing_ms, initial_delay_ms);
 	}
 	return numPulsesSoFar;
 }

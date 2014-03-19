@@ -9,10 +9,10 @@
 #include "LED.h"
 
 // creates an instance of a AntennaGlobeHandle
-AntennaGlobeHandle::AntennaGlobeHandle(const int pinFSR, const int pinLED, int analog_max_level)
+AntennaGlobeHandle::AntennaGlobeHandle(const int pinFSR, const int pinLED, int analog_max_level, int analog_min_level)
 {
 		_pinFSR = pinFSR;
 		// pinMode(_pinFSR, INPUT);
 
-		_led = LED(pinLED, analog_max_level);
+		_led = LED(pinLED, analog_max_level, analog_min_level);
 }
