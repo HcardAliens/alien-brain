@@ -25,6 +25,7 @@ unsigned long BT_SAMPLING_RATE_MS = 1000;
 
 // global state
 State GLOBAL_STATE = POWERUP;
+int reward_counter = 0;
 
 //
 // Control code
@@ -112,6 +113,10 @@ void loop() {
 
 		case REWARD:
 		{
+			if(reward_counter == 5){
+			    GLOBAL_STATE = MEGA_REWARD;
+			    break;
+			}
 			// go googly for 3s
 			bool isMotorOver = motorLeft.goGoogly(micros(), 3000);
 			// pulse in the meantime
@@ -119,6 +124,7 @@ void loop() {
 			if(isMotorOver && numberOfTimesPulsed >= 5){
 				eyebrowLeft.resetEffects();
 				eyebrowLeft.setAllOff();
+				reward_counter++; // bump counter
 			    GLOBAL_STATE = IDLE;
 			}
 			break;
@@ -126,6 +132,8 @@ void loop() {
 
 		case MEGA_REWARD:
 		{
+			GLOBAL_STATE = IDLE;
+			reward_counter = 0;
 			break;
 		}
 	};
