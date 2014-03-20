@@ -105,7 +105,7 @@ void loop() {
 			int rightPotentiometerValue = potAntennaRight.value();
 
 			// send data with 1ms sampling
-			blueDataMonster.sendData(micros(), BT_SAMPLING_RATE_US, leftPotentiometerValue, rightPotentiometerValue);
+			blueDataMonster.sendDataAtSampleRate(micros(), BT_SAMPLING_RATE_US, leftPotentiometerValue, rightPotentiometerValue);
 
 
 			// toggle leds based on potentiometer value
