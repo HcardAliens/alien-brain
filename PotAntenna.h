@@ -6,7 +6,7 @@
 #define PotAntenna_h
 
 #include "Arduino.h"
-#include "PinDefinitions+Constants.h"
+#include "PinDefinitionsAndConstants.h"
 
 class PotAntenna
 {

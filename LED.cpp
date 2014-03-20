@@ -5,7 +5,7 @@
 
 #include "Arduino.h"
 #include "LED.h"
-#include "PinDefinitions+Constants.h"
+#include "PinDefinitionsAndConstants.h"
 
 // only provided for array initialization, not useful otherwise
 LED::LED() {

@@ -4,7 +4,7 @@
 
 #include "Arduino.h"
 #include "LEDEyebrow.h"
-#include "PinDefinitions+Constants.h"
+#include "PinDefinitionsAndConstants.h"
 #include "LED.h"
 
 // creates an instance of a LEDEyebrow

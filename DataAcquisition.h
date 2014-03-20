@@ -12,7 +12,7 @@ class DataAcquisition
 	public:
 		DataAcquisition();
 
-		void sendData(unsigned long currentTime_us, unsigned long samplePeriod_ms, int leftPotVal);
+		void sendData(unsigned long currentTime_us, unsigned long samplePeriod_ms, int leftPotVal, int rightPotVal);
 		void stopData();
 
 		void resetPrevious();
@@ -22,6 +22,8 @@ class DataAcquisition
 		bool _startedSendingData;
 
 		int _previous_leftPotVal;
+                int _previous_rightPotVal;
+
 };
 
 #endif

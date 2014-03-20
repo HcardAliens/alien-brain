@@ -9,9 +9,12 @@
 
 // potentiometer analog read pin
 const int POT_LEFT_PIN = A4;
+const int POT_RIGHT_PIN = A5;
+
 
 // LED write pins
-const int EYEBROW_LEDS_LEFT_PINS[3] = {8, 9, 10};
+const int EYEBROW_LEDS_LEFT_PINS[3] = {2, 3, 4};
+const int EYEBROW_LEDS_RIGHT_PINS[3] = {5, 6, 7};
 
 // Motors
 const int MOTOR_LEFT_PIN = 11;

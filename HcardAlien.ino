@@ -6,7 +6,7 @@
 */
 
 // See this file to define new pins and constants
-#include "PinDefinitions+Constants.h"
+#include "PinDefinitionsAndConstants.h"
 
 #include "PotAntenna.h"
 #include "LEDEyebrow.h"
@@ -15,7 +15,9 @@
 #include "DataAcquisition.h"
 
 PotAntenna potAntennaLeft(POT_LEFT_PIN); // left antenna
+PotAntenna potAntennaRight(POT_RIGHT_PIN); // right antenna
 LEDEyebrow eyebrowLeft(EYEBROW_LEDS_LEFT_PINS, 130, 0); // left eyebrow with max and min analog values
+LEDEyebrow eyebrowRight(EYEBROW_LEDS_RIGHT_PINS, 130, 0); // right eyebrow with max and min analog values
 MotorEye motorLeft(MOTOR_LEFT_PIN); // left motor
 SoundMouth soundMouth(SOUND_PINS); // random number of pins for now
 
@@ -23,7 +25,7 @@ DataAcquisition blueDataMonster; // for sending data over bluetooth
 unsigned long BT_SAMPLING_RATE_US = 1000; // 1ms
 
 // global state
-State GLOBAL_STATE = POWERUP;
+State GLOBAL_STATE = BOTH_ANTENNAS_TOUCHED;
 int reward_counter = 0;
 
 //
@@ -35,6 +37,7 @@ void setup() {
 
 	// reset all effects to be in known state
 	eyebrowLeft.resetEffects();
+        eyebrowRight.resetEffects();
 }
 
 void loop() {
@@ -43,12 +46,16 @@ void loop() {
 		case POWERUP:
 		{
 			// pulse eyebrows, glowing 1s, fading 200ms with 600 ms spacing between pulses and an initial delay of 20ms
-			int numberOfTimesPulsed = eyebrowLeft.pulseAll(micros(), 1000, 200, 600, 20);
-			if(numberOfTimesPulsed == 1){ // pulse once
+			int numberOfTimesPulsed_Left = eyebrowLeft.pulseAll(micros(), 1000, 200, 600, 20);
+			int numberOfTimesPulsed_Right = eyebrowRight.pulseAll(micros(), 1000, 200, 600, 20);
+			if(numberOfTimesPulsed_Left == 1){ // pulse once
 				// don't forget to reset
 				eyebrowLeft.resetEffects();
+				eyebrowRight.resetEffects();
 				// turn off all LEDs just in case
 				eyebrowLeft.setAllOff();
+				eyebrowRight.setAllOff();
+
 		        GLOBAL_STATE = IDLE;
 			}
 			break;
@@ -59,11 +66,14 @@ void loop() {
 			for(int i=0; i<3; i++){
 			    eyebrowLeft._leds[i].setMinAnalog(1); // change min analog
 			    eyebrowLeft._leds[i].setMaxAnalog(200); // change max analog
+			    eyebrowRight._leds[i].setMinAnalog(1); // change min analog
+			    eyebrowRight._leds[i].setMaxAnalog(200); // change max analog
 			}
-			// pulse eyebrows 1.5s glow/1.5s fade with 1s spacing and 2s initial delay for now
-			eyebrowLeft.pulseAll(micros(), 3000, 1000, 1000, 2000);
+			// pulse eyebrows 3s glow/1s fade with 1s spacing and 0s initial delay for now
+			eyebrowLeft.pulseAll(micros(), 3000, 1000, 1000, 0);
+			eyebrowRight.pulseAll(micros(), 3000, 1000, 1000, 0);
 			// loop sound at 8s intervals
-			// soundMouth.play(micros(), INVITING_SOUND_INDEX, 8*1000);
+			 soundMouth.play(micros(), INVITING_SOUND_INDEX, 5*1000);
 
 			// GLOBAL_STATE = BOTH_ANTENNAS_TOUCHED;
 			// eyebrowLeft.resetEffects();
@@ -91,18 +101,23 @@ void loop() {
 		case ANTENNAS_TWISTED:
 		{
 			// get pot value
-			int potentiometerValue = potAntennaLeft.value();
+			int leftPotentiometerValue = potAntennaLeft.value();
+			int rightPotentiometerValue = potAntennaRight.value();
 
 			// send data with 1ms sampling
-			blueDataMonster.sendData(micros(), BT_SAMPLING_RATE_US, potentiometerValue);
+			blueDataMonster.sendData(micros(), BT_SAMPLING_RATE_US, leftPotentiometerValue, rightPotentiometerValue);
+
 
 			// toggle leds based on potentiometer value
-			eyebrowLeft.setStateBasedOnPotValue(potentiometerValue);
+			eyebrowLeft.setStateBasedOnPotValue(leftPotentiometerValue);
+			eyebrowRight.setStateBasedOnPotValue(rightPotentiometerValue);
 
 			// get rotation state from pot value
-			PotRotationState rotationState = potAntennaLeft.rotationState(potentiometerValue);
+			PotRotationState leftRotationState = potAntennaLeft.rotationState(leftPotentiometerValue);
+			PotRotationState rightRotationState = potAntennaRight.rotationState(rightPotentiometerValue);
+
 			// change to reward when twisted completely
-			if(rotationState == POT_MAX_INWARD){
+			if( (rightRotationState == POT_MAX_INWARD) && (leftRotationState == POT_MAX_INWARD) ){
 				GLOBAL_STATE = REWARD;
 				// stop sending data
 				blueDataMonster.stopData();
@@ -119,10 +134,13 @@ void loop() {
 			// go googly for 3s
 			bool isMotorOver = motorLeft.goGoogly(micros(), 3000);
 			// pulse in the meantime
-			int numberOfTimesPulsed = eyebrowLeft.pulseAll(micros(), 50, 50, 100, 0);
-			if(isMotorOver && numberOfTimesPulsed >= 5){
+			int numberOfTimesPulsed_Left = eyebrowLeft.pulseAll(micros(), 50, 50, 100, 0);
+			int numberOfTimesPulsed_Right = eyebrowRight.pulseAll(micros(), 50, 50, 100, 0);
+			if(isMotorOver && numberOfTimesPulsed_Left >= 5){
 				eyebrowLeft.resetEffects();
 				eyebrowLeft.setAllOff();
+				eyebrowRight.resetEffects();
+				eyebrowRight.setAllOff();
 				reward_counter++; // bump counter
 			    GLOBAL_STATE = IDLE;
 			}
