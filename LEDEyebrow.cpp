@@ -8,10 +8,11 @@
 #include "LED.h"
 
 // creates an instance of a LEDEyebrow
-LEDEyebrow::LEDEyebrow(const int pins[3], int analog_max_level, int analog_min_level)
+LEDEyebrow::LEDEyebrow(const int pins[], int numberPins, int analog_max_level, int analog_min_level)
 {
+	_numberPins = numberPins;
 	// create some LED instances from the general LED class
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < _numberPins; ++i)
 	{
 		// int p = pins[i];
 		// LED led(p);
@@ -21,42 +22,42 @@ LEDEyebrow::LEDEyebrow(const int pins[3], int analog_max_level, int analog_min_l
 
 void LEDEyebrow::On()
 {
-	for(int i=0; i < 3;i++) {
+	for(int i=0; i < _numberPins;i++) {
 		_leds[i].On();
 	}
 }
 
 void LEDEyebrow::Off()
 {
-	for(int i=0; i < 3;i++) {
+	for(int i=0; i < _numberPins;i++) {
 		_leds[i].Off();
 	}
 }
 
 void LEDEyebrow::ToMinBrightness()
 {
-	for(int i=0; i < 3;i++) {
+	for(int i=0; i < _numberPins;i++) {
 		_leds[i].ToMinBrightness();
 	}
 }
 
 void LEDEyebrow::setMaxBrightnessValue(int val)
 {
-	for(int i=0; i < 3;i++) {
+	for(int i=0; i < _numberPins;i++) {
 		_leds[i].setMaxBrightnessValue(val);
 	}
 }
 
 void LEDEyebrow::setMinBrightnessValue(int val)
 {
-	for(int i=0; i < 3;i++) {
+	for(int i=0; i < _numberPins;i++) {
 		_leds[i].setMinBrightnessValue(val);
 	}
 }
 
 void LEDEyebrow::setBrightPercent(int perc)
 {
-	for(int i=0; i < 3;i++) {
+	for(int i=0; i < _numberPins;i++) {
 		_leds[i].setBrightPercent(perc);
 	}
 }
@@ -172,8 +173,8 @@ void LEDEyebrow::runWayAll(unsigned long currentTime_us, unsigned long total_on_
 		}
 	}
 
-	unsigned long on_duration_us = 1000 * (total_on_duration_ms / 3);
-	for (int i = 0; i < 3; ++i)
+	unsigned long on_duration_us = 1000 * (total_on_duration_ms / _numberPins);
+	for (int i = 0; i < _numberPins; ++i)
 	{
 		// when to turn on next
 		unsigned long next_turn_on_time = i * on_duration_us;
@@ -199,7 +200,7 @@ void LEDEyebrow::runWayAll(unsigned long currentTime_us, unsigned long total_on_
 void LEDEyebrow::setStateBasedOnPotValue(int val)
 {
 	bool state;
-	for(int i=0; i < 3;i++) {
+	for(int i=0; i < _numberPins;i++) {
 		state = val > (POT_THRESHOLDS[i]) ? true : false;
 		if (state) {
 			_leds[i].On();

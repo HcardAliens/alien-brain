@@ -7,11 +7,12 @@
 
 #include "Arduino.h"
 #include "LED.h"
+#include "PinDefinitionsAndConstants.h"
 
 class LEDEyebrow
 {
 	public:
-		LEDEyebrow(const int pins[3], int analog_max_level, int analog_min_level);
+		LEDEyebrow(const int pins[], int numberPins, int analog_max_level, int analog_min_level);
 
 		// useful shortcuts
 		void On(); // max brightness
@@ -41,7 +42,8 @@ class LEDEyebrow
 
 
 	private:
-		LED _leds[3];
+		LED _leds[MAX_LED_ARRAY_SIZE_EVER]; // CAREFUL, this needs to be big enough to store all leds
+		int _numberPins;
 
 		// used in pulse
 		unsigned long _pulseTime;
