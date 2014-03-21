@@ -25,7 +25,7 @@ DataAcquisition blueDataMonster; // for sending data over bluetooth
 unsigned long BT_SAMPLING_RATE_US = 1000; // 1ms
 
 // global state
-State GLOBAL_STATE = BOTH_ANTENNAS_TOUCHED;
+State GLOBAL_STATE = IDLE;
 int reward_counter = 0;
 
 //
@@ -37,7 +37,7 @@ void setup() {
 
 	// reset all effects to be in known state
 	eyebrowLeft.resetEffects();
-        eyebrowRight.resetEffects();
+	eyebrowRight.resetEffects();
 }
 
 void loop() {
@@ -53,27 +53,28 @@ void loop() {
 				eyebrowLeft.resetEffects();
 				eyebrowRight.resetEffects();
 				// turn off all LEDs just in case
-				eyebrowLeft.setAllOff();
-				eyebrowRight.setAllOff();
+				eyebrowLeft.Off();
+				eyebrowRight.Off();
 
-		        GLOBAL_STATE = IDLE;
+				GLOBAL_STATE = IDLE;
 			}
 			break;
 		}
 
 		case IDLE:
 		{
-			for(int i=0; i<3; i++){
-			    eyebrowLeft._leds[i].setMinAnalog(1); // change min analog
-			    eyebrowLeft._leds[i].setMaxAnalog(200); // change max analog
-			    eyebrowRight._leds[i].setMinAnalog(1); // change min analog
-			    eyebrowRight._leds[i].setMaxAnalog(200); // change max analog
-			}
+			eyebrowLeft.setMinBrightnessValue(1); // change min analog
+			eyebrowLeft.setMaxBrightnessValue(200); // change max analog
+			eyebrowRight.setMinBrightnessValue(1); // change min analog
+			eyebrowRight.setMaxBrightnessValue(200); // change max analog
+
 			// pulse eyebrows 3s glow/1s fade with 1s spacing and 0s initial delay for now
-			eyebrowLeft.pulseAll(micros(), 3000, 1000, 1000, 0);
-			eyebrowRight.pulseAll(micros(), 3000, 1000, 1000, 0);
+			// eyebrowLeft.pulseAll(micros(), 3000, 1000, 1000, 0);
+			// eyebrowRight.pulseAll(micros(), 3000, 1000, 1000, 0);
 			// loop sound at 8s intervals
 			 soundMouth.play(micros(), INVITING_SOUND_INDEX, 5*1000);
+
+			 eyebrowLeft.runWayAll(micros(), 300, 1500); // runway with delay in between each run
 
 			// GLOBAL_STATE = BOTH_ANTENNAS_TOUCHED;
 			// eyebrowLeft.resetEffects();
@@ -128,8 +129,8 @@ void loop() {
 		case REWARD:
 		{
 			if(reward_counter == 5){
-			    GLOBAL_STATE = MEGA_REWARD;
-			    break;
+				GLOBAL_STATE = MEGA_REWARD;
+				break;
 			}
 			// go googly for 3s
 			bool isMotorOver = motorLeft.goGoogly(micros(), 3000);
@@ -138,11 +139,11 @@ void loop() {
 			int numberOfTimesPulsed_Right = eyebrowRight.pulseAll(micros(), 50, 50, 100, 0);
 			if(isMotorOver && numberOfTimesPulsed_Left >= 5){
 				eyebrowLeft.resetEffects();
-				eyebrowLeft.setAllOff();
+				eyebrowLeft.Off();
 				eyebrowRight.resetEffects();
-				eyebrowRight.setAllOff();
+				eyebrowRight.Off();
 				reward_counter++; // bump counter
-			    GLOBAL_STATE = IDLE;
+				GLOBAL_STATE = IDLE;
 			}
 			break;
 		}

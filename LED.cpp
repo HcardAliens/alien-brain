@@ -43,116 +43,39 @@ void LED::setBrightPercent(int perc)
 	}
 }
 
-void LED::setOn()
+void LED::On()
 {
-	if (_currentLevel < _analog_max_level)
+	if (_currentLevel != _analog_max_level)
 	{
 		analogWrite(_pin, _analog_max_level);
 		_currentLevel = _analog_max_level;
 	}
 }
 
-void LED::setOff()
+void LED::Off()
 {
-	if (_currentLevel > _analog_min_level)
+	if (_currentLevel != 0)
+	{
+		analogWrite(_pin, 0);
+		_currentLevel = 0;
+	}
+}
+
+void LED::ToMinBrightness()
+{
+	if (_currentLevel != _analog_min_level)
 	{
 		analogWrite(_pin, _analog_min_level);
 		_currentLevel = _analog_min_level;
 	}
 }
 
-void LED::setMaxAnalog(int val)
+void LED::setMaxBrightnessValue(int val)
 {
 	_analog_max_level = val;
 }
 
-void LED::setMinAnalog(int val)
+void LED::setMinBrightnessValue(int val)
 {
 	_analog_min_level = val;
-}
-
-
-void LED::resetEffects()
-{
-	// pulse related effects
-	_pulseStarted = false;
-}
-
-// returns the number of pulses so far
-//  _pulseState (int) can be -1 (fading), 0 (off) or 1 (brightening)
-int LED::pulse(unsigned long currentTime_us, unsigned long on_glow_ms, unsigned long on_fade_ms, unsigned long off_spacing_ms, unsigned long initial_delay_ms)
-{
-	// initialize the start time when first called
-	if (!_pulseStarted)
-	{
-		// reset to defaults
-		_pulseNumFlashes = 0;
-		_pulseStarted = true;
-
-		_pulseTime = currentTime_us;
-
-		_pulseAlreadyDelayed = false;
-
-		// LED pulses on at the beginning
-		_pulseState = 1;
-	}
-
-	// return straight away if there is a delay
-	if (!_pulseAlreadyDelayed) {
-		if ((currentTime_us - _pulseTime) <= initial_delay_ms) {
-			return _pulseNumFlashes;
-		} else {
-			// delay has been passed
-			_pulseAlreadyDelayed = true;
-			_pulseTime = currentTime_us;
-		}
-	}
-
-	unsigned long next_event_time;
-	int next_state;
-	switch(_pulseState) {
-		case -1: // fading
-			next_event_time = 1000*on_fade_ms;
-			next_state = 0;
-			break;
-
-		case 0: // off
-			next_event_time = 1000*off_spacing_ms;
-			next_state = 1;
-			break;
-
-		case 1: // brightening
-			next_event_time = 1000*on_glow_ms;
-			next_state = -1;
-			break;
-	}
-
-	// whenever we hit next event time, change state
-	if ((currentTime_us - _pulseTime) >= next_event_time) {
-		// change state
-		_pulseState = next_state;
-		// reset start timer
-		_pulseTime = currentTime_us;
-
-		// bump number of flashes every off toggle
-		if (_pulseState == 0) {
-			_pulseNumFlashes++;
-		}
-	}
-
-	// if fading or glowing
-	if (_pulseState != 0) {
-		// set brightness based on time and current state
-		unsigned long perc = (100 * (currentTime_us - _pulseTime)) / next_event_time;
-		// if fading swap around percentage
-		if (_pulseState == -1)
-		{
-			perc = 100-perc;
-		}
-		// perc = 50*(sin(perc/4) + 1);
-		setBrightPercent((int)perc);
-	} else {
-		setBrightPercent(0.0);
-	}
-	return _pulseNumFlashes;
 }
