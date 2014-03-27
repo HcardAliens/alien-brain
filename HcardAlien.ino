@@ -17,8 +17,8 @@
 
 PotAntenna potAntennaLeft(POT_LEFT_PIN); // left antenna
 PotAntenna potAntennaRight(POT_RIGHT_PIN); // right antenna
-FSR FSRAntennaLeft(FSR_LEFT_PIN); // left antenna
-FSR FSRAntennaRight(FSR_RIGHT_PIN); // right antenna
+FSR FSRAntennaLeft(FSR_LEFT_PIN, FSR_THRESHOLD); // left antenna
+FSR FSRAntennaRight(FSR_RIGHT_PIN, FSR_THRESHOLD); // right antenna
 
 LEDEyebrow eyebrowLeft(EYEBROW_LEDS_LEFT_PINS, NUM_EYEBROW_LEFT_PINS, 130, 0); // left eyebrow with max and min analog values
 LEDEyebrow eyebrowRight(EYEBROW_LEDS_RIGHT_PINS, NUM_EYEBROW_RIGHT_PINS, 130, 0); // right eyebrow with max and min analog values

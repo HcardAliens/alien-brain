@@ -5,10 +5,12 @@
 #include "FSR.h"
 
 // creates an instance of
-FSR::FSR(const int pin)
+FSR::FSR(const int pin, int threshold)
 {
 	_pin = pin; // keep a reference to the pin
-	pinMode(pin, INPUT); // to read the potentiometer value
+	pinMode(pin, INPUT); // to read the FSR value
+
+	_threshold = threshold;
 }
 
 int FSR::value()
@@ -18,7 +20,7 @@ int FSR::value()
 
 FSRTouchState FSR::touchState(int value)
 {
-	if (value <= FSR_THRESHOLD) {
+	if (value <= _threshold) {
 		return TOUCHED;
 	} else {
 		return UNTOUCHED;
