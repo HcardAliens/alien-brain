@@ -29,7 +29,7 @@ void DataAcquisition::sendDataAtSampleRate(unsigned long currentTime_us, unsigne
 
 void DataAcquisition::sendData(unsigned long currentTime_us, int leftPotVal, int rightPotVal)
 {
-	Serial.print("DATA\t");
+	Serial.write("*\t");
 	Serial.print(currentTime_us, DEC);
 	Serial.print("\t");
 	Serial.print(leftPotVal, DEC);
