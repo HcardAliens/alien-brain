@@ -15,19 +15,31 @@ const int POT_RIGHT_PIN = A5;
 const int FSR_LEFT_PIN = A6;
 const int FSR_RIGHT_PIN = A7;
 
+// Runway LED
+const int NUM_RUNWAY_LEFT_PINS = 3;
+const int RUNWAY_LEFT_PINS[NUM_RUNWAY_LEFT_PINS] = {41,42,43};
+
+const int NUM_RUNWAY_RIGHT_PINS = 3;
+const int RUNWAY_RIGHT_PINS[NUM_RUNWAY_RIGHT_PINS] = {44,45,46};
+
+// Ball Top
+const int BALLTOP_LEFT_PINS[1] = {12};
+const int BALLTOP_RIGHT_PINS[1] = {13};
+
 
 // LED write pins
-const int NUM_EYEBROW_LEFT_PINS = 3;
-const int EYEBROW_LEDS_LEFT_PINS[NUM_EYEBROW_LEFT_PINS] = {2, 3, 4};
+const int NUM_EYEBROW_LEFT_PINS = 4;
+const int EYEBROW_LEDS_LEFT_PINS[NUM_EYEBROW_LEFT_PINS] = {2, 3, 4, 5};
 
-const int NUM_EYEBROW_RIGHT_PINS = 3;
-const int EYEBROW_LEDS_RIGHT_PINS[NUM_EYEBROW_RIGHT_PINS] = {7, 8, 9};
+const int NUM_EYEBROW_RIGHT_PINS = 4;
+const int EYEBROW_LEDS_RIGHT_PINS[NUM_EYEBROW_RIGHT_PINS] = {6, 7, 8, 9};
 
 // Motors
-const int MOTOR_LEFT_PIN = 11;
+const int MOTOR_LEFT_PIN = 10;
+const int MOTOR_RIGHT_PIN = 11;
 
 // Sound
-const int SOUND_PINS[5] = {31,33,34,37,39}; // random for now
+const int SOUND_PINS[10] = {31,32,33,34,35,36,37,38,39,40}; // random for now
 // sounds correspond to the pins above
 const int IDLE_SOUND_INDEX = 1;
 const int BOTH_ANTENNAS_TOUCHED_SOUND_INDEX = 0;

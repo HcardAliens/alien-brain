@@ -22,6 +22,15 @@ FSR FSRAntennaRight(FSR_RIGHT_PIN, FSR_THRESHOLD); // right antenna
 
 LEDEyebrow eyebrowLeft(EYEBROW_LEDS_LEFT_PINS, NUM_EYEBROW_LEFT_PINS, 130, 0); // left eyebrow with max and min analog values
 LEDEyebrow eyebrowRight(EYEBROW_LEDS_RIGHT_PINS, NUM_EYEBROW_RIGHT_PINS, 130, 0); // right eyebrow with max and min analog values
+
+LEDEyebrow runwayLeft(RUNWAY_LEFT_PINS, NUM_RUNWAY_LEFT_PINS, 130, 0); // make this above 128 for digital pin writes to work
+LEDEyebrow runwayRight(RUNWAY_RIGHT_PINS, NUM_RUNWAY_RIGHT_PINS, 130, 0);
+
+
+// Top of the antenna
+LEDEyebrow ballTopLeft(BALLTOP_LEFT_PINS, 1, 130, 0);
+LEDEyebrow ballTopRight(BALLTOP_RIGHT_PINS, 1, 130, 0);;
+
 MotorEye motorLeft(MOTOR_LEFT_PIN); // left motor
 SoundMouth soundMouth(SOUND_PINS); // random number of pins for now
 
@@ -44,6 +53,12 @@ void setup() {
 	// reset all effects to be in known state
 	eyebrowLeft.resetEffects();
 	eyebrowRight.resetEffects();
+
+	runwayLeft.resetEffects();
+	runwayRight.resetEffects();
+
+	ballTopLeft.resetEffects();
+	ballTopRight.resetEffects();
 }
 
 void loop() {
