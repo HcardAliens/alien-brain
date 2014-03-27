@@ -18,6 +18,9 @@ class LED
 		void Off(); // turn off completely
 		void ToMinBrightness(); // min brightness
 
+		void DigitalOn();
+		void DigitalOff();
+
 		// change the min and max brightness values for the LED
 		void setMaxBrightnessValue(int val);
 		void setMinBrightnessValue(int val);

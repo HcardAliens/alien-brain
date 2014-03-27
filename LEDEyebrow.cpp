@@ -183,9 +183,9 @@ void LEDEyebrow::runWayAll(unsigned long currentTime_us, unsigned long total_on_
 		unsigned long next_turn_off_time = next_turn_on_time + on_duration_us;
 
 		if ((currentTime_us - _runwayTime) >= next_turn_off_time) {
-			_leds[i].Off(); // maybe use MinBrightness() instead ?
+			_leds[i].DigitalOff(); // maybe use MinBrightness() instead ?
 		} else if ((currentTime_us - _runwayTime) >= next_turn_on_time) {
-			_leds[i].On();
+			_leds[i].DigitalOn();
 		}
 	}
 

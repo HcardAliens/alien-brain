@@ -59,6 +59,15 @@ void LED::Off()
 	}
 }
 
+void LED::DigitalOn()
+{
+	digitalWrite(_pin, HIGH);
+}
+void LED::DigitalOff()
+{
+	digitalWrite(_pin, LOW);
+}
+
 void LED::ToMinBrightness()
 {
 	if (_currentLevel != _analog_min_level)
