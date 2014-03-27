@@ -21,8 +21,8 @@ class SoundMouth
 	private:
 		int _pins[5];
 
-		bool _optoStates[5];
-		void setOpto(bool state, int optoNumber);
+		bool _pinStates[5];
+		void setState(bool state, int optoNumber);
 
 		// used in play
 		unsigned long _playStartTime;

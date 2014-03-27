@@ -12,9 +12,9 @@ SoundMouth::SoundMouth(const int pins[5])
 		_pins[i] = pins[i];
 		pinMode(pins[i], OUTPUT);
 
-		// start at low
-		digitalWrite(pins[i], LOW);
-		_optoStates[i] = false;
+		// start at high by default
+		digitalWrite(pins[i], HIGH);
+		_pinStates[i] = true;
 	}
 }
 
@@ -41,21 +41,21 @@ int SoundMouth::play(unsigned long currentTime_us, int sound_index, unsigned lon
 		_playOptoCouplerTriggerTime = currentTime_us;
 	}
 
-	// make opto HIGH for 80 ms (too low and the soundboard doesn't detect the trigger)
+	// make pin LOW for 80 ms (too small and the soundboard doesn't detect the trigger)
 	if ((currentTime_us - _playOptoCouplerTriggerTime) < (unsigned long)80*1000)
 	{
-		setOpto(true, sound_index);
-	} else { // the rest of the time, keep it low
-		setOpto(false, sound_index);
+		setState(false, sound_index);
+	} else { // the rest of the time, keep it high
+		setState(true, sound_index);
 	}
 
 	return _playNumberOfPlays;
 }
 
-void SoundMouth::setOpto(bool state, int optoNumber)
+void SoundMouth::setState(bool state, int optoNumber)
 {
 	// only call digitalWrite when state is different than current one
-	if (state != _optoStates[optoNumber])
+	if (state != _pinStates[optoNumber])
 	{
 		if (state)
 		{
@@ -63,7 +63,7 @@ void SoundMouth::setOpto(bool state, int optoNumber)
 		} else {
 			digitalWrite(_pins[optoNumber], LOW);
 		}
-		_optoStates[optoNumber] = state;
+		_pinStates[optoNumber] = state;
 	}
 }
 
