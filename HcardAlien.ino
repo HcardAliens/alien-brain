@@ -26,7 +26,7 @@ MotorEye motorLeft(MOTOR_LEFT_PIN); // left motor
 SoundMouth soundMouth(SOUND_PINS); // random number of pins for now
 
 DataAcquisition blueDataMonster; // for sending data over bluetooth
-unsigned long BT_SAMPLING_RATE_MS = 10; // 10ms
+unsigned long BT_SAMPLING_RATE_MS = 3; // in ms
 
 // global state
 State GLOBAL_STATE = IDLE;
@@ -38,6 +38,8 @@ int reward_counter = 0;
 
 void setup() {
 	Serial.begin(9600);
+
+	Serial1.begin(9600);
 
 	// reset all effects to be in known state
 	eyebrowLeft.resetEffects();
@@ -69,8 +71,11 @@ void loop() {
 		blueDataMonster.stopData();
 	} else {
 		// send data
-		blueDataMonster.sendDataAtSampleRate(micros(), BT_SAMPLING_RATE_MS, leftPotentiometerValue, rightPotentiometerValue);
+		// blueDataMonster.sendDataAtSampleRate(millis(), BT_SAMPLING_RATE_MS, leftPotentiometerValue, rightPotentiometerValue, leftFSRValue, rightFSRValue);
 	}
+
+	blueDataMonster.sendDataAtSampleRate(millis(), BT_SAMPLING_RATE_MS, leftPotentiometerValue, rightPotentiometerValue, leftFSRValue, rightFSRValue);
+
 
 	switch (GLOBAL_STATE) {
 		// spend 3s in powerup

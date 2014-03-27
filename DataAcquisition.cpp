@@ -9,33 +9,37 @@ DataAcquisition::DataAcquisition()
 	_startedSendingData = false;
 }
 
-void DataAcquisition::sendDataAtSampleRate(unsigned long currentTime_us, unsigned long samplePeriod_ms, int leftPotVal, int rightPotVal)
+void DataAcquisition::sendDataAtSampleRate(unsigned long currentTime_ms, unsigned long samplePeriod_ms, int leftPotVal, int rightPotVal, int leftFSRValue, int rightFSRValue)
 {
 	if (!_startedSendingData)
 	{
 		_startedSendingData = true;
-		_startDataTime = currentTime_us;
+		_startDataTime = currentTime_ms;
 		// send data straight away: don't wait till next samplePeriod
-		sendData(currentTime_us, leftPotVal, rightPotVal);
+		sendData(currentTime_ms, leftPotVal, rightPotVal, leftFSRValue, rightFSRValue);
 	}
 
 
-	if ((currentTime_us - _startDataTime) >= 1000*samplePeriod_ms)
+	if ((currentTime_ms - _startDataTime) >= samplePeriod_ms)
 	{
-		sendData(currentTime_us, leftPotVal, rightPotVal);
-		_startDataTime = currentTime_us;
+		sendData(currentTime_ms, leftPotVal, rightPotVal, leftFSRValue, rightFSRValue);
+		_startDataTime = currentTime_ms;
 	}
 }
 
-void DataAcquisition::sendData(unsigned long currentTime_us, int leftPotVal, int rightPotVal)
+void DataAcquisition::sendData(unsigned long currentTime_ms, int leftPotVal, int rightPotVal, int leftFSRValue, int rightFSRValue)
 {
-	Serial.write("*\t");
-	Serial.print(currentTime_us, DEC);
-	Serial.print("\t");
-	Serial.print(leftPotVal, DEC);
-	Serial.print("\t");
-	Serial.print(rightPotVal, DEC);
-	Serial.print("\n");
+	Serial1.write("*\t");
+	Serial1.print(currentTime_ms, DEC);
+	Serial1.print("\t");
+	Serial1.print(leftPotVal, DEC);
+	Serial1.print("\t");
+	Serial1.print(rightPotVal, DEC);
+	Serial1.print("\t");
+	Serial1.print(leftFSRValue, DEC);
+	Serial1.print("\t");
+	Serial1.print(rightFSRValue, DEC);
+	Serial1.print("\n");
 }
 
 void DataAcquisition::stopData()
