@@ -9,6 +9,7 @@
 #include "PinDefinitionsAndConstants.h"
 
 #include "PotAntenna.h"
+#include "FSR.h"
 #include "LEDEyebrow.h"
 #include "MotorEye.h"
 #include "SoundMouth.h"
@@ -16,6 +17,9 @@
 
 PotAntenna potAntennaLeft(POT_LEFT_PIN); // left antenna
 PotAntenna potAntennaRight(POT_RIGHT_PIN); // right antenna
+FSR FSRAntennaLeft(FSR_LEFT_PIN); // left antenna
+FSR FSRAntennaRight(FSR_RIGHT_PIN); // right antenna
+
 LEDEyebrow eyebrowLeft(EYEBROW_LEDS_LEFT_PINS, NUM_EYEBROW_LEFT_PINS, 130, 0); // left eyebrow with max and min analog values
 LEDEyebrow eyebrowRight(EYEBROW_LEDS_RIGHT_PINS, NUM_EYEBROW_RIGHT_PINS, 130, 0); // right eyebrow with max and min analog values
 MotorEye motorLeft(MOTOR_LEFT_PIN); // left motor
@@ -41,6 +45,23 @@ void setup() {
 }
 
 void loop() {
+
+	// get FSR value
+	int leftFSRValue = FSRAntennaLeft.value();
+	int rightFSRValue = FSRAntennaRight.value();
+
+	// get touch state from FSR value
+	FSRTouchState leftTouchState = FSRAntennaLeft.touchState(leftFSRValue);
+	FSRTouchState rightTouchState = FSRAntennaRight.touchState(rightFSRValue);
+
+	// get pot value
+	int leftPotentiometerValue = potAntennaLeft.value();
+	int rightPotentiometerValue = potAntennaRight.value();
+
+	// get rotation state from pot value
+	PotRotationState leftRotationState = potAntennaLeft.rotationState(leftPotentiometerValue);
+	PotRotationState rightRotationState = potAntennaRight.rotationState(rightPotentiometerValue);
+
 	switch (GLOBAL_STATE) {
 		// spend 3s in powerup
 		case POWERUP:
@@ -63,34 +84,65 @@ void loop() {
 
 		case IDLE:
 		{
-			eyebrowLeft.setMinBrightnessValue(1); // change min analog
+
+			if(leftTouchState == TOUCHED || rightTouchState == TOUCHED)
+			{
+				GLOBAL_STATE = ONE_ANTENNA_TOUCHED;
+				break;
+			}
+
+
+			eyebrowLeft.setMinBrightnessValue(40); // change min analog
 			eyebrowLeft.setMaxBrightnessValue(200); // change max analog
 			eyebrowRight.setMinBrightnessValue(1); // change min analog
 			eyebrowRight.setMaxBrightnessValue(200); // change max analog
 
 			// pulse eyebrows 3s glow/1s fade with 1s spacing and 0s initial delay for now
-			// eyebrowLeft.pulseAll(micros(), 3000, 1000, 1000, 0);
+			eyebrowLeft.pulseAll(micros(), 1000, 500, 3000, 0);
 			// eyebrowRight.pulseAll(micros(), 3000, 1000, 1000, 0);
 			// loop sound at 8s intervals
-			 soundMouth.play(micros(), INVITING_SOUND_INDEX, 5*1000);
+			 soundMouth.play(micros(), IDLE_SOUND_INDEX, 5*1000);
 
-			 eyebrowLeft.runWayAll(micros(), 300, 1500); // runway with delay in between each run
+			 // eyebrowLeft.runWayAll(micros(), 300, 1500); // runway with delay in between each run
 
 			// GLOBAL_STATE = BOTH_ANTENNAS_TOUCHED;
 			// eyebrowLeft.resetEffects();
 			// soundMouth.reset();
 			break;
+
 		}
 
 		case ONE_ANTENNA_TOUCHED:
 		{
+			if(leftTouchState == TOUCHED && rightTouchState == TOUCHED)
+			{
+				GLOBAL_STATE = BOTH_ANTENNAS_TOUCHED;
+				break;
+			}
+			if(leftTouchState == UNTOUCHED && rightTouchState == UNTOUCHED)
+			{
+				GLOBAL_STATE = IDLE;
+				break;
+			}
+
 			break;
 		}
 
 		case BOTH_ANTENNAS_TOUCHED:
 		{
+			if(leftTouchState == TOUCHED || rightTouchState == TOUCHED)
+			{
+				GLOBAL_STATE = ONE_ANTENNA_TOUCHED;
+				break;
+			}
+			if(leftTouchState == UNTOUCHED && rightTouchState == UNTOUCHED)
+			{
+				GLOBAL_STATE = IDLE;
+				break;
+			}
+
 			// use "exact" duration of sound so that play has no delay afterwards
-			int numberOfTimesPlayed = soundMouth.play(micros(), INVITING_SOUND_INDEX, 1500); // 1.5s
+			int numberOfTimesPlayed = soundMouth.play(micros(), BOTH_ANTENNAS_TOUCHED_SOUND_INDEX, 1500); // 1.5s
 			if(numberOfTimesPlayed == 1){ // only play sound once
 				GLOBAL_STATE = ANTENNAS_TWISTED;
 				// don't forget to reset sound
@@ -101,9 +153,24 @@ void loop() {
 
 		case ANTENNAS_TWISTED:
 		{
-			// get pot value
-			int leftPotentiometerValue = potAntennaLeft.value();
-			int rightPotentiometerValue = potAntennaRight.value();
+			if(leftTouchState == TOUCHED || rightTouchState == TOUCHED)
+			{
+				GLOBAL_STATE = ONE_ANTENNA_TOUCHED;
+				break;
+			}
+			if(leftTouchState == UNTOUCHED && rightTouchState == UNTOUCHED)
+			{
+				GLOBAL_STATE = IDLE;
+				break;
+			}
+
+			// change to reward when twisted completely
+			if( (rightRotationState == POT_MAX_INWARD) && (leftRotationState == POT_MAX_INWARD) ){
+				GLOBAL_STATE = REWARD;
+				// stop sending data
+				blueDataMonster.stopData();
+				break;
+			}
 
 			// send data with 1ms sampling
 			blueDataMonster.sendDataAtSampleRate(micros(), BT_SAMPLING_RATE_US, leftPotentiometerValue, rightPotentiometerValue);
@@ -113,16 +180,9 @@ void loop() {
 			eyebrowLeft.setStateBasedOnPotValue(leftPotentiometerValue);
 			eyebrowRight.setStateBasedOnPotValue(rightPotentiometerValue);
 
-			// get rotation state from pot value
-			PotRotationState leftRotationState = potAntennaLeft.rotationState(leftPotentiometerValue);
-			PotRotationState rightRotationState = potAntennaRight.rotationState(rightPotentiometerValue);
 
-			// change to reward when twisted completely
-			if( (rightRotationState == POT_MAX_INWARD) && (leftRotationState == POT_MAX_INWARD) ){
-				GLOBAL_STATE = REWARD;
-				// stop sending data
-				blueDataMonster.stopData();
-			}
+
+
 			break;
 		}
 
@@ -137,14 +197,20 @@ void loop() {
 			// pulse in the meantime
 			int numberOfTimesPulsed_Left = eyebrowLeft.pulseAll(micros(), 50, 50, 100, 0);
 			int numberOfTimesPulsed_Right = eyebrowRight.pulseAll(micros(), 50, 50, 100, 0);
-			if(isMotorOver && numberOfTimesPulsed_Left >= 5){
+			int numberOfTimesPlayed = soundMouth.play(micros(), REWARD_SOUND_INDEX, 1500); // 1.5s
+			if(isMotorOver && numberOfTimesPlayed >= 1 && numberOfTimesPulsed_Left >= 5){
 				eyebrowLeft.resetEffects();
 				eyebrowLeft.Off();
 				eyebrowRight.resetEffects();
 				eyebrowRight.Off();
+				soundMouth.reset();
 				reward_counter++; // bump counter
 				GLOBAL_STATE = IDLE;
 			}
+
+
+
+
 			break;
 		}
 
