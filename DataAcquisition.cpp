@@ -20,7 +20,7 @@ void DataAcquisition::sendDataAtSampleRate(unsigned long currentTime_us, unsigne
 	}
 
 
-	if ((currentTime_us - _startDataTime) >= samplePeriod_ms)
+	if ((currentTime_us - _startDataTime) >= 1000*samplePeriod_ms)
 	{
 		sendData(currentTime_us, leftPotVal, rightPotVal);
 		_startDataTime = currentTime_us;

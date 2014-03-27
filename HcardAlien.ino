@@ -26,7 +26,7 @@ MotorEye motorLeft(MOTOR_LEFT_PIN); // left motor
 SoundMouth soundMouth(SOUND_PINS); // random number of pins for now
 
 DataAcquisition blueDataMonster; // for sending data over bluetooth
-unsigned long BT_SAMPLING_RATE_US = 1000; // 1ms
+unsigned long BT_SAMPLING_RATE_MS = 10; // 10ms
 
 // global state
 State GLOBAL_STATE = IDLE;
@@ -62,6 +62,16 @@ void loop() {
 	PotRotationState leftRotationState = potAntennaLeft.rotationState(leftPotentiometerValue);
 	PotRotationState rightRotationState = potAntennaRight.rotationState(rightPotentiometerValue);
 
+	// bluetooth transfer as close as possible for "accurate" timing
+	// and because it has no effect on anything else
+	if(GLOBAL_STATE == IDLE){
+		// stop sending data when in idle
+		blueDataMonster.stopData();
+	} else {
+		// send data
+		blueDataMonster.sendDataAtSampleRate(micros(), BT_SAMPLING_RATE_MS, leftPotentiometerValue, rightPotentiometerValue);
+	}
+
 	switch (GLOBAL_STATE) {
 		// spend 3s in powerup
 		case POWERUP:
@@ -90,7 +100,6 @@ void loop() {
 				GLOBAL_STATE = ONE_ANTENNA_TOUCHED;
 				break;
 			}
-
 
 			eyebrowLeft.setMinBrightnessValue(40); // change min analog
 			eyebrowLeft.setMaxBrightnessValue(200); // change max analog
@@ -167,20 +176,13 @@ void loop() {
 			// change to reward when twisted completely
 			if( (rightRotationState == POT_MAX_INWARD) && (leftRotationState == POT_MAX_INWARD) ){
 				GLOBAL_STATE = REWARD;
-				// stop sending data
-				blueDataMonster.stopData();
 				break;
 			}
-
-			// send data with 1ms sampling
-			blueDataMonster.sendDataAtSampleRate(micros(), BT_SAMPLING_RATE_US, leftPotentiometerValue, rightPotentiometerValue);
 
 
 			// toggle leds based on potentiometer value
 			eyebrowLeft.setStateBasedOnPotValue(leftPotentiometerValue);
 			eyebrowRight.setStateBasedOnPotValue(rightPotentiometerValue);
-
-
 
 
 			break;
