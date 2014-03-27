@@ -41,9 +41,13 @@ const int MOTOR_RIGHT_PIN = 11;
 // Sound
 const int SOUND_PINS[10] = {31,32,33,34,35,36,37,38,39,40}; // random for now
 // sounds correspond to the pins above
-const int IDLE_SOUND_INDEX = 1;
-const int BOTH_ANTENNAS_TOUCHED_SOUND_INDEX = 0;
-const int REWARD_SOUND_INDEX = 2;
+const int IDLE_SOUND_INDEX = 0;
+const int BOTH_ANTENNAS_TOUCHED_SOUND_INDEX = 1;
+const int REWARD1_SOUND_INDEX = 2;
+const int REWARD2_SOUND_INDEX = 3;
+const int REWARD3_SOUND_INDEX = 4;
+const int REWARD4_SOUND_INDEX = 5;
+const int MEGA_REWARD_SOUND_INDEX = 6;
 
 
 
