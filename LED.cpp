@@ -36,8 +36,6 @@ void LED::setBrightPercent(int perc)
 	unsigned long level = ((unsigned long)perc * ((unsigned long)_analog_max_level - (unsigned long)_analog_min_level)) / 100 + _analog_min_level;
 	if (_currentLevel != level)
 	{
-		Serial.print("Wrote brightness: ");
-		Serial.println((int)level);
 		analogWrite(_pin, (int)level);
 		_currentLevel = level;
 	}

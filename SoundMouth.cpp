@@ -24,7 +24,6 @@ int SoundMouth::play(unsigned long currentTime_us, int sound_index, unsigned lon
 	// initialize the start time when first called
 	if (!_playStarted)
 	{
-		Serial.println("----- MEGA START-----");
 		_playStartTime = currentTime_us;
 		_playNumberOfPlays = 0;
 		_playStarted = true;
@@ -61,10 +60,8 @@ void SoundMouth::setOpto(bool state, int optoNumber)
 		if (state)
 		{
 			digitalWrite(_pins[optoNumber], HIGH);
-			Serial.println("DEBUG WROTE HIGH");
 		} else {
 			digitalWrite(_pins[optoNumber], LOW);
-			Serial.println("DEBUG WROTE LOW");
 		}
 		_optoStates[optoNumber] = state;
 	}
