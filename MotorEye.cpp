@@ -30,6 +30,8 @@ bool MotorEye::goGoogly(unsigned long currentTime_us, unsigned long googleOnTime
 		if ((currentTime_us - _googlyStartTime)%googleSequenceTime < googleOnTime_ms )
 		{
 			on(googleVelocity);
+		} else {
+			off();
 		}
 
 
