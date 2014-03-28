@@ -13,17 +13,27 @@ MotorEye::MotorEye(const int pin)
 }
 
 // returns whether the googly time is over
-bool MotorEye::goGoogly(unsigned long currentTime_us, unsigned long duration_ms)
+bool MotorEye::goGoogly(unsigned long currentTime_us, unsigned long googleOnTime_ms, unsigned long googleOffTime_ms, unsigned long googleVelocity, unsigned long totalGoogleTime)
 {
 	// initialize the start time when first called
 	if (!_googlyStarted)
 	{
 		_googlyStartTime = currentTime_us;
 		_googlyStarted = true;
-		on();
+		
 	} else {
-		unsigned long next_event_time = 1000*duration_ms;
+		unsigned long next_event_time = 1000*totalGoogleTime;
 		// whenever we hit next event time, which is the end
+
+		unsigned long googleSequenceTime = 1000*(googleOnTime_ms + googleOffTime_ms);
+
+		if ((currentTime_us - _googlyStartTime)%googleSequenceTime < googleOnTime_ms )
+		{
+			on(googleVelocity);
+		}
+
+
+
 		if ((currentTime_us - _googlyStartTime) >= next_event_time) {
 			// stop the motor
 			off();
@@ -36,11 +46,11 @@ bool MotorEye::goGoogly(unsigned long currentTime_us, unsigned long duration_ms)
 	return false;
 }
 
-void MotorEye::on()
+void MotorEye::on(unsigned long motorVelocity)
 {
 	// only turn on if not already on
 	if (!_isOn) {
-		digitalWrite(_pin, HIGH);
+		analogWrite(_pin, motorVelocity);
 		_isOn = true;
 	}
 }

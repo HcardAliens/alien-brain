@@ -278,7 +278,7 @@ void loop() {
 
 
 			// go googly for 3s
-			bool isMotorOver = motorLeft.goGoogly(micros(), 3000);
+			bool isMotorOver = motorLeft.goGoogly(micros(), 100, 100, 100, 3000);
 			// pulse in the meantime
 			int numberOfTimesPulsed_Left = eyebrowLeft.pulseAll(micros(), 150, 150, 100, 0);
 			int numberOfTimesPulsed_Right = eyebrowRight.pulseAll(micros(), 150, 150, 100, 0);
@@ -302,7 +302,7 @@ void loop() {
 			reward_counter = 0; // reset reward counter
 
 			// go mega googly for 6s
-			bool isMotorOver = motorLeft.goGoogly(micros(), 6000);
+			bool isMotorOver = motorLeft.goGoogly(micros(), 100, 100, 100, 6000);
 
 			// pulse in the meantime
 			int numberOfTimesPulsed_Left = eyebrowLeft.pulseAll(micros(), 150, 150, 100, 0);
